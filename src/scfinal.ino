@@ -1,4 +1,4 @@
-nclude <AccelStepper.h>
+#include <AccelStepper.h>
 
 // BLUETOOTH COMMANDO ENABLED on Serial1
 
