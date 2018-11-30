@@ -34,3 +34,5 @@ The green boards are
 2X button boards with Schmidt trigger and hardware denounce. I have built only 1 at the moment. as we can use reset on the mega2560 to Home the motors as well till I make the second one later
 
 BlueTooth trigger:  HC-SR05 board
+
+Note: The BT interface is BT2.0 and will not be recognized by iOS ( macbook or iphone ). This can be upgraded to the latest BLE4.X using an off the shelf HM-10 module ( soldering required. )

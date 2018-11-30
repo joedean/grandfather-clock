@@ -1,6 +1,25 @@
+
+//
+// The Scott Clock Final Animator
+// Hardware : AT Mega 2560
+// Pending :  RTC Integration - I2C Serial1
+// Complete :  BT Integration - UART Serial1
+// Version :  2.0
+// Status  :  Prototype.
+//
+// POWER SUPPLY 12Volts 2Amps ( 24Watts )
+// Motor Current Calibrate to 1Amp for each A4988 board
+//
+
 #include <AccelStepper.h>
 
+//
 // BLUETOOTH COMMANDO ENABLED on Serial1
+// Blue Tooth ID = Scott-Clock
+// BlueTooth 2.0
+// Password =
+// Use Android or Windows Blue Tooth Terminal Client
+//
 
 
 // Version
@@ -75,7 +94,7 @@ long stepsperrevolution = 800; // Quater Setp
 // Error Adjustment Pending Current Setting on A4988
 long hourhomepad = 5; // was 10
 long minhomepad = 6; // was 10
-long hourerrorsteps = 25; // For Missing Step Compensation.
+long hourerrorsteps = 60; // For Missing Step Compensation.
 long minerrorsteps = 40;
 
 // Common Motor Parameters for Speed and Accleration
@@ -193,7 +212,7 @@ void setup()
 
      if (command == 1)
        {
-       doAnimation( animate_waittime );
+       doAnimation( 0 );
        continue;
        }
 
@@ -224,6 +243,8 @@ void setup()
 
      if(command == 2)
        break;
+
+     Serial1.println( "Menu Selection Error ..." );
 
    }
 
@@ -445,6 +466,17 @@ void dumpAnimationParameters()
      Serial1.println( animate_spins );
 }
 
+void set2Nine()
+{
+
+
+}
+
+void spin2Twelve()
+{
+
+
+}
 
 void doAnimation( int waittime )
 {
@@ -492,7 +524,13 @@ void doAnimation( int waittime )
     // I waittime = 0 then wait for interrupt otherwise wait the quantity of wait time in seconds.
 
    if (!waittime)
+   {
+      Serial.print( "Time Set To " );
+      Serial.print( animate_starthour );
+      Serial.print( ":" );
+      Serial.println( animate_startmin );
       wait4Comms();
+   }
    else
       delay( waittime * 1000 );
 
@@ -514,7 +552,10 @@ void wait4Comms()
 
    digitalWrite( LED_COMMS, HIGH );
 
-   Serial1.println( "Start Animation ? " );
+   Serial1.print( "Send 0 To Start Animation To " );
+   Serial1.print( animate_endhour );
+   Serial1.print( ":" );
+   Serial1.print( animate_endmin );
 
    while( 1 )
    {
@@ -527,19 +568,18 @@ void wait4Comms()
         }
      else
        {
-         /*
-         while(1)
+         // Consume Crap characters
+         int crap = Serial1.parseInt();
+
+         while(Serial1.available() > 0)
          {
-         char junk = Serial1,read();
-         if ( Serial1.available() == 0 )
-           break;
+             char junk = Serial1.read();
          }
-         */
          break;
        }
    }
 
-  Serial1.println( "Starting Animation... " );
+  Serial1.println( "Starting ... " );
 
   digitalWrite( LED_COMMS, LOW );
 
@@ -781,8 +821,9 @@ void testMotor( int motor, AccelStepper stepper , int *homecount )
      goodcount = MIN_PASS;
   }
 
-  Serial1.print( "Self Testing Motor and Interrupter For " );
-  Serial1.println( motorstring );
+  Serial1.print( "Self Test Motor & Interrupter " );
+  Serial1.print( motorstring );
+  Serial1.print( " Servo." );
 
 
   digitalWrite( LED_STATUS, HIGH ); // Set Working LED ON
